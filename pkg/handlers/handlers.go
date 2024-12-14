@@ -45,6 +45,18 @@ func (c *handler) Build(addr ...string) {
 // Middleware para validar o método HTTP
 func methodValidatorMiddleware(allowedMethod string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Configura os cabeçalhos CORS
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// Se for uma requisição OPTIONS, finalize aqui
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		if r.Method != allowedMethod {
 			http.Error(w, fmt.Sprintf("Método não permitido. Use %s", allowedMethod), http.StatusMethodNotAllowed)
 			return
